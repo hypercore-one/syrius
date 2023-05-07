@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 class ToastUtils {
   static Timer? _timer;
 
-  static void showToast(BuildContext context, String message) {
+  static void showToast(BuildContext context, String message, {Color? color}) {
     if (_timer == null || !_timer!.isActive) {
-      final overlay = _getOverlayEntry(message);
+      final overlay = _getOverlayEntry(message, color);
       Overlay.of(context).insert(overlay);
       _timer = Timer(const Duration(seconds: 3), () {
         overlay.remove();
@@ -15,7 +15,7 @@ class ToastUtils {
     }
   }
 
-  static OverlayEntry _getOverlayEntry(String message) {
+  static OverlayEntry _getOverlayEntry(String message, Color? color) {
     return OverlayEntry(
       builder: (_) => TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 200),
@@ -29,6 +29,8 @@ class ToastUtils {
                 alignment: Alignment.bottomCenter,
                 child: Material(
                   elevation: 6.0,
+                  color: color,
+                  surfaceTintColor: Colors.black,
                   borderRadius: BorderRadius.circular(50.0),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
