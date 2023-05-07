@@ -65,9 +65,7 @@ class HtlcSwapsHandler {
   Future<void> _goThroughHtlcBlocks(List<AccountBlock> blocks) async {
     for (final block in blocks) {
       await _extractSwapDataFromBlock(block);
-
-      // TODO: Take into use. Not used for now to make debugging easier.
-      // htlcSwapsService!.storeLastCheckedHtlcBlockHeight(block.height);
+      await htlcSwapsService!.storeLastCheckedHtlcBlockHeight(block.height);
     }
   }
 
