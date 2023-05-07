@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/notification_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/toast_utils.dart';
 
@@ -9,7 +10,8 @@ class ClipboardUtils {
       ClipboardData(
         text: stringValue,
       ),
-    ).then((_) => ToastUtils.showToast(context, 'Copied to clipboard'));
+    ).then((_) =>
+        ToastUtils.showToast(context, 'Copied', color: AppColors.znnColor));
   }
 
   static void pasteToClipboard(
