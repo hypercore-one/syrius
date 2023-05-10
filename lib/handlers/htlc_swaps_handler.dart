@@ -113,6 +113,9 @@ class HtlcSwapsHandler {
         }
         return;
       case 'Unlock':
+        if (htlcBlock.descendantBlocks.isEmpty) {
+          return;
+        }
         if (swap.preimage == null) {
           if (!blockData.params.containsKey('preimage')) {
             return;
@@ -138,6 +141,9 @@ class HtlcSwapsHandler {
         }
         return;
       case 'Reclaim':
+        if (htlcBlock.descendantBlocks.isEmpty) {
+          return;
+        }
         bool isSelfReclaim = false;
         if (swap.direction == P2pSwapDirection.outgoing &&
             blockData.params['id'].toString() == swap.initialHtlcId) {
