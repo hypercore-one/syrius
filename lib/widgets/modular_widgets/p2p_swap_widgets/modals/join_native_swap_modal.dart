@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:stacked/stacked.dart';
@@ -378,10 +379,13 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
 
   int? _calculateSafeExpirationTime(int initialHtlcExpiration) {
     const minimumSafeTime = Duration(hours: 1);
+    const maxExpirationTime = Duration(days: 1);
     final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
     final remaining = Duration(seconds: initialHtlcExpiration - now);
     final safeTime = remaining ~/ 2;
-    return safeTime >= minimumSafeTime ? now + safeTime.inSeconds : null;
+    return safeTime >= minimumSafeTime
+        ? min(now + safeTime.inSeconds, now + maxExpirationTime.inSeconds)
+        : null;
   }
 
   Widget _getExchangeRateWidget(Token tokenToReceive) {
