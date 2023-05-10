@@ -69,7 +69,13 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
             child: _getContent(snapshot.data!),
           );
         } else if (snapshot.hasError) {
-          return SyriusErrorWidget(snapshot.error!);
+          return BaseModal(
+            title: '',
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SyriusErrorWidget(snapshot.error!),
+            ),
+          );
         }
         return const SyriusLoadingWidget();
       },
@@ -496,7 +502,7 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
       onViewModelReady: (model) {
         model.stream.listen(
           null,
-          onError: (error) {
+          onError: (error, stackTrace) {
             setState(() {
               _isSendingTransaction = false;
             });

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:logging/logging.dart';
 import 'package:zenon_syrius_wallet_flutter/blocs/auto_unlock_htlc_worker.dart';
 import 'package:zenon_syrius_wallet_flutter/main.dart';
 import 'package:zenon_syrius_wallet_flutter/model/block_data.dart';
@@ -13,32 +14,49 @@ import 'package:znn_sdk_dart/znn_sdk_dart.dart';
 class HtlcSwapsHandler {
   static HtlcSwapsHandler? _instance;
 
+  bool _isRunning = false;
+
   static HtlcSwapsHandler getInstance() {
     _instance ??= HtlcSwapsHandler();
     return _instance!;
   }
 
-  Future<void> runPeriodically() async {
-    final unresolvedSwaps = htlcSwapsService!.getSwapsByState(
-        [P2pSwapState.pending, P2pSwapState.active, P2pSwapState.reclaimable]);
-    if (unresolvedSwaps.isNotEmpty) {
-      if (await _areThereNewHtlcBlocks()) {
-        final newBlocks = await _getNewHtlcBlocks(unresolvedSwaps);
-        await _goThroughHtlcBlocks(newBlocks);
-      }
-      await _checkForExpiredSwaps();
-      _checkForAutoUnlockableSwaps();
+  void start() {
+    if (!_isRunning) {
+      _runPeriodically();
     }
-    sl<AutoUnlockHtlcWorker>().autoUnlock();
+  }
 
-    Future.delayed(const Duration(seconds: 5), () async {
-      runPeriodically();
-    });
+  Future<void> _runPeriodically() async {
+    _isRunning = true;
+    if (!zenon!.wsClient.isClosed()) {
+      final unresolvedSwaps = htlcSwapsService!.getSwapsByState([
+        P2pSwapState.pending,
+        P2pSwapState.active,
+        P2pSwapState.reclaimable
+      ]);
+      if (unresolvedSwaps.isNotEmpty) {
+        if (await _areThereNewHtlcBlocks()) {
+          final newBlocks = await _getNewHtlcBlocks(unresolvedSwaps);
+          await _goThroughHtlcBlocks(newBlocks);
+        }
+        await _checkForExpiredSwaps();
+        _checkForAutoUnlockableSwaps();
+      }
+      sl<AutoUnlockHtlcWorker>().autoUnlock();
+    }
+    Future.delayed(const Duration(seconds: 5), () => _runPeriodically());
   }
 
   Future<int?> _getHtlcFrontierHeight() async {
-    final frontier = await zenon!.ledger.getFrontierAccountBlock(htlcAddress);
-    return frontier?.height;
+    try {
+      final frontier = await zenon!.ledger.getFrontierAccountBlock(htlcAddress);
+      return frontier?.height;
+    } catch (e, stackTrace) {
+      Logger('HtlcSwapsHandler')
+          .log(Level.WARNING, '_getHtlcFrontierHeight', e, stackTrace);
+    }
+    return null;
   }
 
   Future<bool> _areThereNewHtlcBlocks() async {
@@ -53,13 +71,26 @@ class HtlcSwapsHandler {
     int lastCheckedBlockTime = 0;
 
     if (lastCheckedHeight > 0) {
-      lastCheckedBlockTime = (await AccountBlockUtils.getTimeForBlockHeight(
-              htlcAddress, lastCheckedHeight)) ??
-          lastCheckedBlockTime;
+      try {
+        lastCheckedBlockTime =
+            (await AccountBlockUtils.getTimeForAccountBlockHeight(
+                    htlcAddress, lastCheckedHeight)) ??
+                lastCheckedBlockTime;
+      } catch (e, stackTrace) {
+        Logger('HtlcSwapsHandler')
+            .log(Level.WARNING, '_getNewHtlcBlocks', e, stackTrace);
+        return [];
+      }
     }
 
-    return AccountBlockUtils.getBlocksAfterTime(
-        htlcAddress, max(oldestSwapStartTime, lastCheckedBlockTime));
+    try {
+      return AccountBlockUtils.getAccountBlocksAfterTime(
+          htlcAddress, max(oldestSwapStartTime, lastCheckedBlockTime));
+    } catch (e, stackTrace) {
+      Logger('HtlcSwapsHandler')
+          .log(Level.WARNING, '_getNewHtlcBlocks', e, stackTrace);
+      return [];
+    }
   }
 
   Future<void> _goThroughHtlcBlocks(List<AccountBlock> blocks) async {

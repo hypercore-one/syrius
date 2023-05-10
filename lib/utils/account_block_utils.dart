@@ -96,6 +96,9 @@ class AccountBlockUtils {
   }
 
   static BlockData? getDecodedBlockData(Abi abi, List<int> encodedData) {
+    if (encodedData.length < AbiFunction.encodedSignLength) {
+      return null;
+    }
     final eq = const ListEquality().equals;
     try {
       for (final entry in abi.entries) {
@@ -118,45 +121,54 @@ class AccountBlockUtils {
 
   // Returns a list of AccountBlocks that are newer than a given timestamp.
   // The list is returned in ascending order.
-  static Future<List<AccountBlock>> getBlocksAfterTime(
+  static Future<List<AccountBlock>> getAccountBlocksAfterTime(
       Address address, int time) async {
     final List<AccountBlock> blocks = [];
     int pageIndex = 0;
-    while (true) {
-      final fetched = await zenon!.ledger
-          .getAccountBlocksByPage(address, pageIndex: pageIndex, pageSize: 100);
+    try {
+      while (true) {
+        final fetched = await zenon!.ledger.getAccountBlocksByPage(address,
+            pageIndex: pageIndex, pageSize: 100);
 
-      final lastBlockConfirmation = fetched.list!.last.confirmationDetail;
-      if (lastBlockConfirmation == null ||
-          lastBlockConfirmation.momentumTimestamp <= time) {
-        for (final block in fetched.list!) {
-          final confirmation = block.confirmationDetail;
-          if (confirmation == null || confirmation.momentumTimestamp <= time) {
-            break;
+        final lastBlockConfirmation = fetched.list!.last.confirmationDetail;
+        if (lastBlockConfirmation == null ||
+            lastBlockConfirmation.momentumTimestamp <= time) {
+          for (final block in fetched.list!) {
+            final confirmation = block.confirmationDetail;
+            if (confirmation == null ||
+                confirmation.momentumTimestamp <= time) {
+              break;
+            }
+            blocks.add(block);
           }
-          blocks.add(block);
+          break;
         }
-        break;
+
+        blocks.addAll(fetched.list!);
+
+        if (fetched.more == null || !fetched.more!) {
+          break;
+        }
+
+        pageIndex += 1;
       }
-
-      blocks.addAll(fetched.list!);
-
-      if (fetched.more == null || !fetched.more!) {
-        break;
-      }
-
-      pageIndex += 1;
+    } catch (e) {
+      rethrow;
     }
-
     return blocks.reversed.toList();
   }
 
-  static Future<int?> getTimeForBlockHeight(Address address, int height) async {
+  static Future<int?> getTimeForAccountBlockHeight(
+      Address address, int height) async {
     if (height >= 1) {
-      final block =
-          await zenon!.ledger.getAccountBlocksByHeight(address, height, 1);
-      if (block.count != null && block.count! > 0) {
-        return block.list?.first.confirmationDetail?.momentumTimestamp;
+      try {
+        final block =
+            await zenon!.ledger.getAccountBlocksByHeight(address, height, 1);
+        if (block.count != null && block.count! > 0) {
+          return block.list?.first.confirmationDetail?.momentumTimestamp;
+        }
+      } catch (e) {
+        rethrow;
       }
     }
     return null;

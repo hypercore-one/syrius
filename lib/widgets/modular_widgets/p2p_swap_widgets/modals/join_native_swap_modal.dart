@@ -87,7 +87,10 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
                   zenon!.embedded.token.getByZts(_initialHltc!.tokenStandard),
               builder: (_, snapshot) {
                 if (snapshot.hasError) {
-                  return SyriusErrorWidget(snapshot.error!);
+                  return Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SyriusErrorWidget(snapshot.error!),
+                  );
                 } else if (snapshot.hasData) {
                   return _getContent(snapshot.data!);
                 }

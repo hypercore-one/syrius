@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:json_rpc_2/json_rpc_2.dart';
+import 'package:logging/logging.dart';
 import 'package:zenon_syrius_wallet_flutter/blocs/base_bloc.dart';
 import 'package:zenon_syrius_wallet_flutter/main.dart';
 import 'package:zenon_syrius_wallet_flutter/model/database/notification_type.dart';
@@ -51,9 +52,14 @@ class AutoUnlockHtlcWorker extends BaseBloc<WalletNotification> {
           waitForRequiredPlasma: true,
         );
         _sendSuccessNotification(response, htlc.hashLocked.toString());
-      } on RpcException catch (e) {
-        pool.addFirst(currentHash);
-        _sendErrorNotification(e.toString());
+      } on RpcException catch (e, stackTrace) {
+        Logger('AutoUnlockHtlcWorker')
+            .log(Level.WARNING, 'autoUnlock', e, stackTrace);
+        // Ignore exception caused by non existent HTLC
+        if (!e.message.contains('data non existent')) {
+          pool.addFirst(currentHash);
+          _sendErrorNotification(e.toString());
+        }
       }
       running = false;
     }
@@ -92,7 +98,12 @@ class AutoUnlockHtlcWorker extends BaseBloc<WalletNotification> {
           pool.add(hash);
           processedHashes.add(hash);
         }
-      });
+      }).onError(
+        (e, stackTrace) {
+          Logger('AutoUnlockHtlcWorker')
+              .log(Level.WARNING, 'addHash', e, stackTrace);
+        },
+      );
     }
   }
 }
