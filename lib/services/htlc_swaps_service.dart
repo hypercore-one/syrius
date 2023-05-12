@@ -74,10 +74,12 @@ class HtlcSwapsService {
         .get(kLastCheckedHtlcBlockKey, defaultValue: 0);
   }
 
-  Future<void> storeSwap(HtlcSwap swap) async => await _htlcSwapsBox!.put(
+  Future<void> storeSwap(HtlcSwap swap) async => await _htlcSwapsBox!
+      .put(
         swap.id,
         jsonEncode(swap.toJson()),
-      );
+      )
+      .then((_) async => await _pruneSwapsHistoryIfNeeded());
 
   Future<void> storeLastCheckedHtlcBlockHeight(int height) async =>
       await _lastCheckedHtlcBlockHeightBox!
@@ -94,5 +96,23 @@ class HtlcSwapsService {
             .map((e) => HtlcSwap.fromJson(jsonDecode(e)))
             .toList()
         : [];
+  }
+
+  HtlcSwap? _getOldestPrunableSwap() {
+    final swaps = getAllSwaps()
+        .where((e) => [P2pSwapState.completed, P2pSwapState.unsuccessful]
+            .contains(e.state))
+        .toList();
+    swaps.sort((a, b) => b.startTime.compareTo(a.startTime));
+    return swaps.isNotEmpty ? swaps.last : null;
+  }
+
+  Future<void> _pruneSwapsHistoryIfNeeded() async {
+    if (_htlcSwapsBox!.length > kMaxP2pSwapsToStore) {
+      final toBePruned = _getOldestPrunableSwap();
+      if (toBePruned != null) {
+        await deleteSwap(toBePruned.id);
+      }
+    }
   }
 }

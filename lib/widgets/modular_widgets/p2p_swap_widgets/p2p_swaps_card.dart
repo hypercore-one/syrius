@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zenon_syrius_wallet_flutter/blocs/p2p_swap/p2p_swaps_list_bloc.dart';
 import 'package:zenon_syrius_wallet_flutter/main.dart';
 import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/p2p_swap.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/modals/native_p2p_swap_modal.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/p2p_swaps_list_item.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/widgets.dart';
@@ -104,7 +105,7 @@ class _P2pSwapsCardState extends State<P2pSwapsCard> {
               controller: _scrollController,
               child: ListView.separated(
                   controller: _scrollController,
-                  cacheExtent: 10000,
+                  cacheExtent: 1000,
                   itemCount: swaps.length,
                   separatorBuilder: (_, __) {
                     return const SizedBox(
@@ -147,18 +148,46 @@ class _P2pSwapsCardState extends State<P2pSwapsCard> {
             flex: 20,
             child: _getHeaderItem('Started'),
           ),
-          const Spacer(
+          Expanded(
             flex: 20,
+            child: Visibility(
+              visible: htlcSwapsService!.isMaxSwapsReached,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  _getHeaderItem(
+                    'Swap history is full',
+                    textColor: AppColors.errorColor,
+                    textHeight: 1.0,
+                  ),
+                  const SizedBox(
+                    width: 5.0,
+                  ),
+                  const Tooltip(
+                    message:
+                        'The oldest swap entry will be deleted when a new swap is started.',
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 3.0),
+                      child: Icon(
+                        Icons.info,
+                        color: AppColors.errorColor,
+                        size: 12.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _getHeaderItem(String text) {
+  Widget _getHeaderItem(String text, {Color? textColor, double? textHeight}) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 12.0),
+      style: TextStyle(fontSize: 12.0, height: textHeight, color: textColor),
     );
   }
 }

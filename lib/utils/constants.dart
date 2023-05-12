@@ -110,6 +110,7 @@ const int kZnnProjectMinimumFunds = 10;
 const int kQsrProjectMinimumFunds = 100;
 const int kAmountInputMaxCharacterLength = 21;
 const int kSecondsPerMomentum = 10;
+const int kMaxP2pSwapsToStore = 500;
 
 const List<int> kNormalUsersPlasmaRequirements = [
   kStakePlasmaAmountNeeded,
