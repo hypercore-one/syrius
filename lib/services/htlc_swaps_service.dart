@@ -17,9 +17,11 @@ class HtlcSwapsService {
     return _instance!;
   }
 
-  Future<void> openBoxes(List<int> cipherKey) async {
+  bool get isMaxSwapsReached => _htlcSwapsBox!.length >= kMaxP2pSwapsToStore;
+
+  Future<void> openBoxes(String htlcSwapsBoxSuffix, List<int> cipherKey) async {
     if (_htlcSwapsBox == null || !_htlcSwapsBox!.isOpen) {
-      _htlcSwapsBox = await Hive.openBox(kHtlcSwapsBox,
+      _htlcSwapsBox = await Hive.openBox('${kHtlcSwapsBox}_$htlcSwapsBoxSuffix',
           encryptionCipher: HiveAesCipher(cipherKey));
     }
 

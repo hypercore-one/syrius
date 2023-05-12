@@ -49,7 +49,6 @@ const List<String> kCacheBoxesToBeDeleted = [
   kRecipientAddressBox,
   kSharedPrefsBox,
   kNodesBox,
-  kHtlcSwapsBox,
   kLastCheckedHtlcBlockBox
 ];
 

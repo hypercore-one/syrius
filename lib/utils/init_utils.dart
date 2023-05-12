@@ -80,8 +80,9 @@ class InitUtils {
     await _openRecipientBox();
     await NodeUtils.initWebSocketClient();
     await _setWalletVersion();
-    await htlcSwapsService!
-        .openBoxes(kKeyStore!.getKeyPair(0).getPrivateKey()!);
+    final baseAddress = await kKeyStore!.getKeyPair(0).address;
+    await htlcSwapsService!.openBoxes(
+        baseAddress.toString(), kKeyStore!.getKeyPair(0).getPrivateKey()!);
     sl<HtlcSwapsHandler>().start();
     kWalletInitCompleted = true;
   }
