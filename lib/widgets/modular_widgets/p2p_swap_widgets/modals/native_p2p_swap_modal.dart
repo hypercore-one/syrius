@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:hive/hive.dart';
 import 'package:stacked/stacked.dart';
 import 'package:zenon_syrius_wallet_flutter/blocs/p2p_swap/htlc_swap/reclaim_htlc_swap_funds_bloc.dart';
 import 'package:zenon_syrius_wallet_flutter/blocs/p2p_swap/htlc_swap/complete_htlc_swap_bloc.dart';
@@ -12,12 +13,14 @@ import 'package:zenon_syrius_wallet_flutter/utils/clipboard_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/constants.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/utils.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/htlc_card.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/htlc_swap_details_widget.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/buttons/elevated_button.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/buttons/instruction_button.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/error_widget.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/exchange_rate_widget.dart';
+import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/important_text_container.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/loading_info_text.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/loading_widget.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/modals/base_modal.dart';
@@ -401,6 +404,18 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
             visible: swap.direction == P2pSwapDirection.outgoing,
             child: Column(
               children: [
+                Visibility(
+                  visible: !isTrustedToken(swap.toTokenStandard ?? ''),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 25.0),
+                    child: ImportantTextContainer(
+                      text:
+                          '''You are receiving a token that is not in your favorites. '''
+                          '''Please verify that the token standard is correct: ${swap.toTokenStandard ?? ''}''',
+                      isSelectable: true,
+                    ),
+                  ),
+                ),
                 _getSwapButtonViewModel(swap),
                 const SizedBox(
                   height: 25,
@@ -414,7 +429,8 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 15.0),
               child: LoadingInfoText(
-                  text: 'Waiting for the counterparty to complete the swap.'),
+                  text:
+                      'Waiting for the counterparty. Please keep Syrius running.'),
             ),
           ),
         ],
@@ -436,6 +452,7 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
             setState(() {
               _isSendingTransaction = false;
             });
+            ToastUtils.showToast(context, error.toString());
           },
         );
       },
@@ -502,7 +519,7 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
       onViewModelReady: (model) {
         model.stream.listen(
           null,
-          onError: (error, stackTrace) {
+          onError: (error) {
             setState(() {
               _isSendingTransaction = false;
             });

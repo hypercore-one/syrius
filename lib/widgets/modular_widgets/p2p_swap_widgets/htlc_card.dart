@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/htlc_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/p2p_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/address_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/color_utils.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/constants.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/detail_row.dart';
@@ -277,7 +279,11 @@ class _HtlcCardState extends State<HtlcCard>
           valueToShow: htlcId.toShortString()),
     );
     children.add(
-      DetailRow(label: 'Token standard', value: widget.tokenStandard!),
+      DetailRow(
+        label: 'Token standard',
+        value: widget.tokenStandard!,
+        prefixWidget: _getTokenStandardTooltip(widget.tokenStandard ?? ''),
+      ),
     );
     children.add(
       DetailRow(
@@ -304,6 +310,32 @@ class _HtlcCardState extends State<HtlcCard>
           (index) => const SizedBox(
             height: 15.0,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget? _getTokenStandardTooltip(String tokenStandard) {
+    var message = 'This token is not in your favorites.';
+    var icon = Icons.help;
+    var iconColor = AppColors.errorColor;
+    if ([znnTokenStandard, qsrTokenStandard].contains(tokenStandard)) {
+      message = 'This token is verified.';
+      icon = Icons.check_circle_outline;
+      iconColor = AppColors.znnColor;
+    } else if (Hive.box(kFavoriteTokensBox).values.contains(tokenStandard)) {
+      message = 'This token is in your favorites.';
+      icon = Icons.star;
+      iconColor = AppColors.znnColor;
+    } else {}
+    return Tooltip(
+      message: message,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 1.0),
+        child: Icon(
+          icon,
+          color: iconColor,
+          size: 14.0,
         ),
       ),
     );

@@ -6,12 +6,14 @@ class DetailRow extends StatelessWidget {
   final String label;
   final String value;
   final String? valueToShow;
+  final Widget? prefixWidget;
   final bool canBeCopied;
 
   const DetailRow({
     required this.label,
     required this.value,
     this.valueToShow,
+    this.prefixWidget,
     this.canBeCopied = true,
     Key? key,
   }) : super(key: key);
@@ -26,6 +28,11 @@ class DetailRow extends StatelessWidget {
                 fontSize: 12.0, color: AppColors.subtitleColor)),
         Row(
           children: [
+            prefixWidget ?? Container(),
+            if (prefixWidget != null)
+              const SizedBox(
+                width: 5.0,
+              ),
             Text(valueToShow ?? value,
                 style: const TextStyle(
                     fontSize: 12.0, color: AppColors.subtitleColor)),

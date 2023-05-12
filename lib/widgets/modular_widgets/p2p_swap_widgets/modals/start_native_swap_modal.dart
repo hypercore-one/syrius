@@ -11,6 +11,7 @@ import 'package:zenon_syrius_wallet_flutter/utils/clipboard_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/constants.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/global.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/input_validators.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/toast_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/zts_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/bullet_point_card.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/buttons/instruction_button.dart';
@@ -132,7 +133,7 @@ class _StartNativeSwapModalState extends State<StartNativeSwapModal> {
                       maxWidth: 45.0,
                       maxHeight: 20.0,
                     ),
-                    hintText: 'z1q...',
+                    hintText: 'Enter NoM address',
                     contentLeftPadding: 10.0,
                   ),
                 ),
@@ -233,6 +234,7 @@ class _StartNativeSwapModalState extends State<StartNativeSwapModal> {
             setState(() {
               _isLoading = false;
             });
+            ToastUtils.showToast(context, error.toString());
           },
         );
       },

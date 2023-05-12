@@ -15,6 +15,7 @@ import 'package:zenon_syrius_wallet_flutter/utils/constants.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/input_validators.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/toast_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/zts_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/htlc_card.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/bullet_point_card.dart';
@@ -157,12 +158,12 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
             ],
           ),
         ),
-        _getHtlcViewModel(),
+        _getInitialHtlcViewModel(),
       ],
     );
   }
 
-  _getHtlcViewModel() {
+  _getInitialHtlcViewModel() {
     return ViewModelBuilder<InitialHtlcForSwapBloc>.reactive(
       onViewModelReady: (model) {
         model.stream.listen(
@@ -183,6 +184,7 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
               _initialHtlcError = error.toString();
               _isLoading = false;
             });
+            ToastUtils.showToast(context, error.toString());
           },
         );
       },
@@ -322,7 +324,22 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
           ),
         const SizedBox(height: 20.0),
         _safeExpirationTime != null
-            ? _getJoinSwapViewModel(tokenToReceive)
+            ? Column(children: [
+                Visibility(
+                  visible:
+                      !isTrustedToken(tokenToReceive.tokenStandard.toString()),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: ImportantTextContainer(
+                      text:
+                          '''You are receiving a token that is not in your favorites. '''
+                          '''Please verify that the token standard is correct: ${tokenToReceive.tokenStandard.toString()}''',
+                      isSelectable: true,
+                    ),
+                  ),
+                ),
+                _getJoinSwapViewModel(tokenToReceive),
+              ])
             : const ImportantTextContainer(
                 text:
                     'Cannot join swap. The swap will expire too soon for a safe swap.',
@@ -345,6 +362,7 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
             setState(() {
               _isLoading = false;
             });
+            ToastUtils.showToast(context, error.toString());
           },
         );
       },

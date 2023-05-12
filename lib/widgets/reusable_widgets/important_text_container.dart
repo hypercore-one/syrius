@@ -4,10 +4,12 @@ import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 class ImportantTextContainer extends StatelessWidget {
   final String text;
   final bool showBorder;
+  final bool isSelectable;
 
   const ImportantTextContainer({
     required this.text,
     this.showBorder = false,
+    this.isSelectable = false,
     Key? key,
   }) : super(key: key);
 
@@ -38,7 +40,11 @@ class ImportantTextContainer extends StatelessWidget {
             const SizedBox(
               width: 15.0,
             ),
-            Text(text, style: const TextStyle(fontSize: 14.0, height: 1)),
+            Expanded(
+              child: isSelectable
+                  ? SelectableText(text, style: const TextStyle(fontSize: 14.0))
+                  : Text(text, style: const TextStyle(fontSize: 14.0)),
+            ),
           ],
         ),
       ),
