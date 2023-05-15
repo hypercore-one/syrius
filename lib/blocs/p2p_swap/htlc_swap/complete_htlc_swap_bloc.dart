@@ -25,6 +25,11 @@ class CompleteHtlcSwapBloc extends BaseBloc<HtlcSwap?> {
         throw 'The swap will expire too soon for a safe swap.';
       }
 
+      if (htlc.keyMaxSize <
+          FormatUtils.decodeHexString(swap.preimage!).length) {
+        throw 'The swap secret size exceeds the maximum allowed size.';
+      }
+
       AccountBlockTemplate transactionParams = zenon!.embedded.htlc.unlock(
           Hash.parse(htlcId), FormatUtils.decodeHexString(swap.preimage!));
       KeyPair blockSigningKeyPair = kKeyStore!.getKeyPair(
