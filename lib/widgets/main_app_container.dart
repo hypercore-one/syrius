@@ -257,13 +257,13 @@ class _MainAppContainerState extends State<MainAppContainer>
     return _getTextTabs() + _getIconTabs();
   }
 
-  //TODO: add 'P2P Swap' exception here or leave it in .toTitleCase()
   List<Tab> _getTextTabs() {
     return kTabsWithTextTitles
         .map<Tab>(
-          (e) => Tab(
-            text: FormatUtils.extractNameFromEnum<Tabs>(e).toTitleCase(),
-          ),
+          (e) => e == Tabs.p2pSwap
+              ? const Tab(text: 'P2P Swap')
+              : Tab(
+                  text: FormatUtils.extractNameFromEnum<Tabs>(e).capitalize()),
         )
         .toList();
   }
