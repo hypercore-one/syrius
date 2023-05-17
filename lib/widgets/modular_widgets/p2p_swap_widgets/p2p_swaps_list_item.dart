@@ -75,7 +75,7 @@ class _P2pSwapsListItemState extends State<P2pSwapsListItem> {
               Expanded(
                 flex: 20,
                 child: _getTextWidget(
-                  _formatData(widget.swap.startTime * 1000),
+                  _formatTime(widget.swap.startTime * 1000),
                 ),
               ),
               Expanded(
@@ -218,17 +218,17 @@ class _P2pSwapsListItemState extends State<P2pSwapsListItem> {
     }
   }
 
-  String _formatData(int transactionMillis) {
+  String _formatTime(int transactionMillis) {
     int currentMillis = DateTime.now().millisecondsSinceEpoch;
     if (currentMillis - transactionMillis <=
         const Duration(days: 1).inMilliseconds) {
-      return _formatDataShort(currentMillis - transactionMillis);
+      return _formatTimeShort(currentMillis - transactionMillis);
     }
     return FormatUtils.formatDate(transactionMillis,
         dateFormat: 'MM/dd/yyyy hh:mm a');
   }
 
-  String _formatDataShort(int i) {
+  String _formatTimeShort(int i) {
     Duration duration = Duration(milliseconds: i);
     if (duration.inHours > 0) {
       return '${duration.inHours} h ago';

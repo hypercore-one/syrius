@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/reusable_widgets/loading_info_text.dart';
 
-enum ButtonState { busy, idle }
-
 class InstructionButton extends StatefulWidget {
   final String text;
   final bool isEnabled;
