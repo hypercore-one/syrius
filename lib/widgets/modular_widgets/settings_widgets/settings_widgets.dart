@@ -6,5 +6,4 @@ export 'general.dart';
 export 'node_management.dart';
 export 'peers.dart';
 export 'security.dart';
-export 'swap_options.dart';
 export 'wallet_options.dart';
