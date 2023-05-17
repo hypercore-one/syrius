@@ -4,6 +4,7 @@ import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/htlc_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/p2p_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/account_block_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/address_utils.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/date_time_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/global.dart';
@@ -49,7 +50,7 @@ class JoinHtlcSwapBloc extends BaseBloc<HtlcSwap?> {
             counterHtlcExpirationTime: counterHtlcExpirationTime,
             counterpartyAddress: initialHtlc.timeLocked.toString(),
             state: P2pSwapState.active,
-            startTime: (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+            startTime: DateTimeUtils.unixTimeNow,
             initialHtlcId: initialHtlc.id.toString(),
             initialHtlcExpirationTime: initialHtlc.expirationTime,
             fromAmount: amount,

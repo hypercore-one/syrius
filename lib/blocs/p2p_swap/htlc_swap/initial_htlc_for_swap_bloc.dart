@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:zenon_syrius_wallet_flutter/blocs/base_bloc.dart';
 import 'package:zenon_syrius_wallet_flutter/main.dart';
-import 'package:zenon_syrius_wallet_flutter/utils/global.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/utils.dart';
 import 'package:znn_sdk_dart/znn_sdk_dart.dart';
 
 class InitialHtlcForSwapBloc extends BaseBloc<HtlcInfo?> {
@@ -19,8 +19,8 @@ class InitialHtlcForSwapBloc extends BaseBloc<HtlcInfo?> {
       if (htlcSwapsService!.getSwapByHtlcId(htlc.id.toString()) != null) {
         throw 'This deposit is already used in another swap.';
       }
-      final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-      final remainingDuration = Duration(seconds: htlc.expirationTime - now);
+      final remainingDuration =
+          Duration(seconds: htlc.expirationTime - DateTimeUtils.unixTimeNow);
       if (remainingDuration < _minimumRequiredDuration) {
         if (remainingDuration.inSeconds <= 0) {
           throw 'This deposit has expired.';

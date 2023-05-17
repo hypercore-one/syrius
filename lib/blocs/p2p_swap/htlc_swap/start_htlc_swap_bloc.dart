@@ -6,6 +6,7 @@ import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/htlc_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/p2p_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/account_block_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/address_utils.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/date_time_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/global.dart';
@@ -53,7 +54,7 @@ class StartHtlcSwapBloc extends BaseBloc<HtlcSwap?> {
             selfAddress: selfAddress.toString(),
             counterpartyAddress: counterpartyAddress.toString(),
             state: P2pSwapState.pending,
-            startTime: (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+            startTime: DateTimeUtils.unixTimeNow,
             initialHtlcId: response.hash.toString(),
             initialHtlcExpirationTime: expirationTime,
             fromAmount: amount,

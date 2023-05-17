@@ -6,6 +6,7 @@ import 'package:zenon_syrius_wallet_flutter/utils/address_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/color_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/constants.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/date_time_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/widgets/modular_widgets/p2p_swap_widgets/detail_row.dart';
@@ -134,6 +135,15 @@ class _HtlcCardState extends State<HtlcCard>
     );
   }
 
+  Widget _getWaitingBody() {
+    return const SizedBox(
+      height: 94.0,
+      child: LoadingInfoText(
+        text: 'Waiting for the counterparty to join the swap.',
+      ),
+    );
+  }
+
   Widget _getWidgetBody() {
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -188,18 +198,9 @@ class _HtlcCardState extends State<HtlcCard>
     );
   }
 
-  Widget _getWaitingBody() {
-    return const SizedBox(
-      height: 94,
-      child: LoadingInfoText(
-        text: 'Waiting for the counterparty to join the swap.',
-      ),
-    );
-  }
-
   Widget _getExpirationWarning(int expirationTime) {
-    final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    final remaining = Duration(seconds: expirationTime - now);
+    final remaining =
+        Duration(seconds: expirationTime - DateTimeUtils.unixTimeNow);
     return Visibility(
       visible: !remaining.isNegative && remaining < _expirationWarningThreshold,
       child: Row(
@@ -342,8 +343,8 @@ class _HtlcCardState extends State<HtlcCard>
   }
 
   Widget _getExpirationRow(int expirationTime) {
-    final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    final duration = Duration(seconds: expirationTime - now);
+    final duration =
+        Duration(seconds: expirationTime - DateTimeUtils.unixTimeNow);
     if (duration.isNegative) {
       return const DetailRow(
           label: 'Expires in', value: 'Expired', canBeCopied: false);

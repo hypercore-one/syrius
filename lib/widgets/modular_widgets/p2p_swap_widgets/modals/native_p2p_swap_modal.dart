@@ -238,11 +238,11 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
   }
 
   Widget _getUnsuccessfulView(HtlcSwap swap) {
-    final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
     final expiration = swap.direction == P2pSwapDirection.outgoing
         ? swap.initialHtlcExpirationTime
         : swap.counterHtlcExpirationTime;
-    final remainingDuration = Duration(seconds: (expiration ?? 0) - now);
+    final remainingDuration =
+        Duration(seconds: (expiration ?? 0) - DateTimeUtils.unixTimeNow);
     final isReclaimable = remainingDuration.inSeconds <= 0 &&
         swap.state == P2pSwapState.reclaimable;
     return Column(

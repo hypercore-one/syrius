@@ -12,6 +12,7 @@ import 'package:zenon_syrius_wallet_flutter/model/p2p_swap/p2p_swap.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/app_colors.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/clipboard_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/constants.dart';
+import 'package:zenon_syrius_wallet_flutter/utils/date_time_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/extensions.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/format_utils.dart';
 import 'package:zenon_syrius_wallet_flutter/utils/input_validators.dart';
@@ -401,7 +402,7 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
   int? _calculateSafeExpirationTime(int initialHtlcExpiration) {
     const minimumSafeTime = Duration(hours: 1);
     const maxExpirationTime = Duration(days: 1);
-    final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+    final now = DateTimeUtils.unixTimeNow;
     final remaining = Duration(seconds: initialHtlcExpiration - now);
     final safeTime = remaining ~/ 2;
     return safeTime >= minimumSafeTime
