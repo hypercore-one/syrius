@@ -30,21 +30,25 @@ class HtlcSwapsHandler {
 
   Future<void> _runPeriodically() async {
     _isRunning = true;
-    if (!zenon!.wsClient.isClosed()) {
-      final unresolvedSwaps = htlcSwapsService!.getSwapsByState([
-        P2pSwapState.pending,
-        P2pSwapState.active,
-        P2pSwapState.reclaimable
-      ]);
-      if (unresolvedSwaps.isNotEmpty) {
-        if (await _areThereNewHtlcBlocks()) {
-          final newBlocks = await _getNewHtlcBlocks(unresolvedSwaps);
-          await _goThroughHtlcBlocks(newBlocks);
+    try {
+      if (!zenon!.wsClient.isClosed()) {
+        final unresolvedSwaps = htlcSwapsService!.getSwapsByState([
+          P2pSwapState.pending,
+          P2pSwapState.active,
+          P2pSwapState.reclaimable
+        ]);
+        if (unresolvedSwaps.isNotEmpty) {
+          if (await _areThereNewHtlcBlocks()) {
+            final newBlocks = await _getNewHtlcBlocks(unresolvedSwaps);
+            await _goThroughHtlcBlocks(newBlocks);
+          }
+          await _checkForExpiredSwaps();
+          _checkForAutoUnlockableSwaps();
         }
-        await _checkForExpiredSwaps();
-        _checkForAutoUnlockableSwaps();
+        sl<AutoUnlockHtlcWorker>().autoUnlock();
       }
-      sl<AutoUnlockHtlcWorker>().autoUnlock();
+    } catch (e) {
+      Logger('HtlcSwapsHandler').log(Level.WARNING, '_runPeriodically', e);
     }
     Future.delayed(const Duration(seconds: 5), () => _runPeriodically());
   }
