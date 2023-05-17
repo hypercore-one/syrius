@@ -81,12 +81,6 @@ class _SettingsTabChildState extends State<SettingsTabChild> {
           ),
           height: kStaggeredNumOfColumns / 3,
         ),
-        /*FluidCell(
-          child: SwapOptions(
-            widget._onResyncWalletPressed,
-          ),
-          height: kStaggeredNumOfColumns / 6,
-        ),*/
         FluidCell(
           width: context.layout.value(
             xl: kStaggeredNumOfColumns ~/ 2,
