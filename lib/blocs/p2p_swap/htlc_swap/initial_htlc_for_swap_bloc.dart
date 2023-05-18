@@ -19,6 +19,11 @@ class InitialHtlcForSwapBloc extends BaseBloc<HtlcInfo?> {
       if (htlcSwapsService!.getSwapByHtlcId(htlc.id.toString()) != null) {
         throw 'This deposit is already used in another swap.';
       }
+      if (htlcSwapsService!
+              .getSwapByHashLock(FormatUtils.encodeHexString(htlc.hashLock)) !=
+          null) {
+        throw 'The deposit\'s hashlock is already used in another swap.';
+      }
       final remainingDuration =
           Duration(seconds: htlc.expirationTime - DateTimeUtils.unixTimeNow);
       if (remainingDuration < _minimumRequiredDuration) {
