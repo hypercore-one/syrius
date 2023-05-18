@@ -60,9 +60,11 @@ class AutoUnlockHtlcWorker extends BaseBloc<WalletNotification> {
           pool.addFirst(currentHash);
           _sendErrorNotification(e.toString());
         }
-      } catch (e) {
-        Logger('AutoUnlockHtlcWorker').log(Level.WARNING, 'autoUnlock', e);
+      } catch (e, stackTrace) {
+        Logger('AutoUnlockHtlcWorker')
+            .log(Level.WARNING, 'autoUnlock', e, stackTrace);
         pool.addFirst(currentHash);
+        _sendErrorNotification(e.toString());
       }
       running = false;
     }

@@ -29,8 +29,8 @@ class HtlcSwapsHandler {
   }
 
   Future<void> _runPeriodically() async {
-    _isRunning = true;
     try {
+      _isRunning = true;
       if (!zenon!.wsClient.isClosed()) {
         final unresolvedSwaps = htlcSwapsService!.getSwapsByState([
           P2pSwapState.pending,
@@ -49,8 +49,9 @@ class HtlcSwapsHandler {
       }
     } catch (e) {
       Logger('HtlcSwapsHandler').log(Level.WARNING, '_runPeriodically', e);
+    } finally {
+      Future.delayed(const Duration(seconds: 5), () => _runPeriodically());
     }
-    Future.delayed(const Duration(seconds: 5), () => _runPeriodically());
   }
 
   Future<int?> _getHtlcFrontierHeight() async {
