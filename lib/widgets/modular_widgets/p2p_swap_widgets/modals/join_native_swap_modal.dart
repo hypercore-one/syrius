@@ -97,7 +97,7 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
                   return _getContent(snapshot.data!);
                 }
                 return const Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(50.0),
                   child: SyriusLoadingWidget(),
                 );
               },
