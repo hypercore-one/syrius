@@ -185,7 +185,6 @@ class _JoinNativeSwapModalState extends State<JoinNativeSwapModal> {
               _initialHtlcError = error.toString();
               _isLoading = false;
             });
-            ToastUtils.showToast(context, error.toString());
           },
         );
       },
