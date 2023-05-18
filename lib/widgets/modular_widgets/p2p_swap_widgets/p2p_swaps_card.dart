@@ -138,11 +138,11 @@ class _P2pSwapsCardState extends State<P2pSwapsCard> {
           ),
           Expanded(
             flex: 20,
-            child: _getHeaderItem('Sent'),
+            child: _getHeaderItem('From'),
           ),
           Expanded(
             flex: 20,
-            child: _getHeaderItem('Received'),
+            child: _getHeaderItem('To'),
           ),
           Expanded(
             flex: 20,
