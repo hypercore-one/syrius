@@ -59,14 +59,4 @@ class FormatUtils {
         )
         .millisecondsSinceEpoch;
   }
-
-  static String formatLongString(String longString) {
-    try {
-      return longString.substring(0, 7) +
-          "..." +
-          longString.substring(longString.length - 7, longString.length);
-    } catch (e) {
-      return longString;
-    }
-  }
 }
