@@ -1,1 +1,1 @@
-export 'swap_card.dart';
+export 'bridge_card.dart';
