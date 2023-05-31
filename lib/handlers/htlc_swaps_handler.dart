@@ -36,9 +36,7 @@ class HtlcSwapsHandler {
   Future<void> _runPeriodically() async {
     try {
       _isRunning = true;
-      if (!Platform.isLinux && hasActiveSwaps) {
-        Wakelock.enable();
-      }
+      await _enableWakelockIfNeeded();
       if (!zenon!.wsClient.isClosed()) {
         final unresolvedSwaps = htlcSwapsService!.getSwapsByState([
           P2pSwapState.pending,
@@ -59,6 +57,17 @@ class HtlcSwapsHandler {
       Logger('HtlcSwapsHandler').log(Level.WARNING, '_runPeriodically', e);
     } finally {
       Future.delayed(const Duration(seconds: 5), () => _runPeriodically());
+    }
+  }
+
+  Future<void> _enableWakelockIfNeeded() async {
+    if (!Platform.isLinux && hasActiveSwaps) {
+      try {
+        await Wakelock.enable();
+      } catch (e) {
+        Logger('HtlcSwapsHandler')
+            .log(Level.WARNING, '_enableWakelockIfNeeded', e);
+      }
     }
   }
 
