@@ -140,8 +140,6 @@ class _HtlcCardState extends State<HtlcCard>
       height: 94.0,
       child: LoadingInfoText(
         text: 'Waiting for the counterparty to join the swap.',
-        tooltipText:
-            'Your wallet will not be auto-locked while the swap is in progress.',
       ),
     );
   }

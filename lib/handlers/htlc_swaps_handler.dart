@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:zenon_syrius_wallet_flutter/blocs/auto_unlock_htlc_worker.dart';
@@ -30,8 +31,10 @@ class HtlcSwapsHandler {
     }
   }
 
-  bool get hasActiveSwaps => htlcSwapsService!
-      .getSwapsByState([P2pSwapState.pending, P2pSwapState.active]).isNotEmpty;
+  bool get hasActiveIncomingSwaps =>
+      htlcSwapsService!.getSwapsByState([P2pSwapState.active]).firstWhereOrNull(
+          (e) => e.direction == P2pSwapDirection.incoming) !=
+      null;
 
   Future<void> _runPeriodically() async {
     try {
@@ -61,7 +64,7 @@ class HtlcSwapsHandler {
   }
 
   Future<void> _enableWakelockIfNeeded() async {
-    if (!Platform.isLinux && hasActiveSwaps) {
+    if (!Platform.isLinux && hasActiveIncomingSwaps) {
       try {
         await Wakelock.enable();
       } catch (e) {
