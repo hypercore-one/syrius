@@ -1601,8 +1601,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "wip/v0.0.5"
-      resolved-ref: "9b0df0caa5619124667bfbff887e5e7ee9516b0d"
+      ref: "feature/bigint"
+      resolved-ref: "2849fa0c135fe03c65c81800f1f67fa7c46ead6b"
       url: "https://github.com/hypercore-one/znn_sdk_dart.git"
     source: git
     version: "0.0.5"

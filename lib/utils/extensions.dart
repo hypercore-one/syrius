@@ -1,3 +1,4 @@
+import 'dart:math' show pow;
 import 'package:big_decimal/big_decimal.dart';
 
 extension StringExtensions on String {
@@ -21,6 +22,12 @@ extension StringExtensions on String {
   //BigInt.parse(num.parse(this).toStringAsFixed(decimals).replaceAll('.', ''));
 
   String abs() => this;
+}
+
+extension FixedNumDecimals on double {
+  String toStringFixedNumDecimals(int numDecimals) {
+    return '${(this * pow(10, numDecimals)).truncate() / pow(10, numDecimals)}';
+  }
 }
 
 extension BigIntExtensions on BigInt {
