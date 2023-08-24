@@ -224,3 +224,5 @@ const Duration kCounterHtlcDuration = Duration(hours: 1);
 const Duration kMaxAllowedInitialHtlcDuration = Duration(hours: 24);
 const Duration kMinSafeTimeToFindPreimage = Duration(hours: 6);
 const Duration kMinSafeTimeToCompleteSwap = Duration(minutes: 10);
+const String kHasReadP2pSwapWarningKey = 'has_read_p2p_swap_warning';
+const bool kHasReadP2pSwapWarningDefaultValue = false;
