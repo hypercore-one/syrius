@@ -148,7 +148,7 @@ class _P2pSwapsListItemState extends State<P2pSwapsListItem> {
         Row(
           children: [
             Container(
-              constraints: const BoxConstraints(maxWidth: 100),
+              constraints: const BoxConstraints(maxWidth: 70),
               child: _getTextWidget(amount.addDecimals(decimals)),
             ),
             Container(
