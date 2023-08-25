@@ -183,13 +183,14 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('From',
-                        style: TextStyle(
-                            fontSize: 14.0, color: AppColors.subtitleColor)),
-                    Text(
-                        '${swap.fromAmount.addDecimals(swap.fromDecimals)} ${swap.fromSymbol}',
-                        style: const TextStyle(
-                            fontSize: 14.0, color: AppColors.subtitleColor)),
+                    const Text(
+                      'From',
+                      style: TextStyle(
+                          fontSize: 14.0, color: AppColors.subtitleColor),
+                    ),
+                    _getAmountAndSymbolWidget(
+                        swap.fromAmount.addDecimals(swap.fromDecimals),
+                        swap.fromSymbol),
                   ],
                 ),
                 const SizedBox(
@@ -198,13 +199,14 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('To',
-                        style: TextStyle(
-                            fontSize: 14.0, color: AppColors.subtitleColor)),
-                    Text(
-                        '${swap.toAmount!.addDecimals(swap.toDecimals!)} ${swap.toSymbol!}',
-                        style: const TextStyle(
-                            fontSize: 14.0, color: AppColors.subtitleColor)),
+                    const Text(
+                      'To',
+                      style: TextStyle(
+                          fontSize: 14.0, color: AppColors.subtitleColor),
+                    ),
+                    _getAmountAndSymbolWidget(
+                        swap.toAmount!.addDecimals(swap.toDecimals!),
+                        swap.toSymbol!),
                   ],
                 ),
                 const SizedBox(
@@ -313,16 +315,15 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                        swap.state == P2pSwapState.reclaimable
-                            ? 'Deposited amount'
-                            : 'Deposited amount (reclaimed)',
-                        style: const TextStyle(
-                            fontSize: 14.0, color: AppColors.subtitleColor)),
-                    Text(
-                      '${swap.fromAmount.addDecimals(swap.fromDecimals)} ${swap.fromSymbol}',
+                      swap.state == P2pSwapState.reclaimable
+                          ? 'Deposited amount'
+                          : 'Deposited amount (reclaimed)',
                       style: const TextStyle(
                           fontSize: 14.0, color: AppColors.subtitleColor),
                     ),
+                    _getAmountAndSymbolWidget(
+                        swap.fromAmount.addDecimals(swap.fromDecimals),
+                        swap.fromSymbol),
                   ],
                 ),
               ],
@@ -581,5 +582,34 @@ class _NativeP2pSwapModalState extends State<NativeP2pSwapModal> {
         toAmount: swap.toAmount!,
         toDecimals: swap.toDecimals!,
         toSymbol: swap.toSymbol!);
+  }
+
+  Widget _getAmountAndSymbolWidget(String amount, String symbol) {
+    return Row(
+      children: [
+        Container(
+          constraints: const BoxConstraints(maxWidth: 150),
+          child: Text(
+            amount,
+            style:
+                const TextStyle(fontSize: 14.0, color: AppColors.subtitleColor),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: false,
+          ),
+        ),
+        Container(
+          constraints: const BoxConstraints(maxWidth: 100),
+          child: Text(
+            ' $symbol',
+            style:
+                const TextStyle(fontSize: 14.0, color: AppColors.subtitleColor),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: false,
+          ),
+        ),
+      ],
+    );
   }
 }
