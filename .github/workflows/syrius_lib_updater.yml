@@ -16,7 +16,7 @@ jobs:
       - name: Download libznn
         uses: robinraju/release-downloader@v1.6
         with:
-          repository: "zenon-network/go-zenon"
+          repository: "hypercore-one/go-zenon"
           latest: true
       - name: Extract libznn library
         run: |
